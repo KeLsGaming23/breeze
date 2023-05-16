@@ -11,8 +11,7 @@ class AuthController extends Controller
             if(Auth::attempt($request->only('email', 'password'))){
                 $user = Auth::user();
                 // $token = Str::random(60);
-                $token = $user->createToken('app')->accessToken;
-
+                $token = $request->user()->createToken($request->token_name);
                 return response([
                     'message' => 'Successfully Login',
                     'token' => $token,
