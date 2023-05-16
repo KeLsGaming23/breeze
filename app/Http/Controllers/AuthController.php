@@ -1,9 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Exception;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class AuthController extends Controller
 {
     public function Login(Request $request){
@@ -11,7 +11,7 @@ class AuthController extends Controller
             if(Auth::attempt($request->only('email', 'password'))){
                 $user = Auth::user();
                 // $token = Str::random(60);
-                $token = $request->user()->createToken($request->token_name);
+                $token = $user->createToken('app')->plainTextToken;
                 return response([
                     'message' => 'Successfully Login',
                     'token' => $token,
