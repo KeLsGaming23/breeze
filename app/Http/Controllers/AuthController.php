@@ -1,9 +1,13 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Http\Requests\RegisterRequest;
+use App\Models\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     public function Login(Request $request){
@@ -26,5 +30,22 @@ class AuthController extends Controller
         return response([
             'message' => 'Invalide email or password'
         ], 401);
+    }
+    public function Register(Request $request){
+        $this->validate($request, [
+            'name' => 'required|min:4',
+            'email' => 'required|email',
+            'password' => 'required|min:8',
+        ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password)
+        ]);
+        $token = $user->createToken('app')->plainTextToken;
+        return response()->json([
+            'message' => 'Successfully registered',
+            'token' => $token
+        ], 200);
     }
 }
