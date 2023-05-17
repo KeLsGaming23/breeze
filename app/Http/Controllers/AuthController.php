@@ -32,20 +32,41 @@ class AuthController extends Controller
         ], 401);
     }
     public function Register(Request $request){
-        $this->validate($request, [
-            'name' => 'required|min:4',
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-        $token = $user->createToken('app')->plainTextToken;
-        return response()->json([
-            'message' => 'Successfully registered',
-            'token' => $token
-        ], 200);
+        try{
+
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password)
+            ]);
+            $token = $user->createToken('app')->plainTextToken;
+            // $token = Str::random(60);
+            return response([
+                'message' => 'Register Successfully',
+                'token' => $token,
+                'user' => $user
+            ],200);
+        }catch(Exception $exception){
+            return response([
+                'message' => $exception->getMessage()
+            ],400);
+        }
+
+        // Maam Klane Method
+        // $this->validate($request, [
+        //     'name' => 'required|min:4',
+        //     'email' => 'required|email',
+        //     'password' => 'required|min:8',
+        // ]);
+        // $user = User::create([
+        //     'name' => $request->name,
+        //     'email' => $request->email,
+        //     'password' => bcrypt($request->password)
+        // ]);
+        // $token = $user->createToken('app')->plainTextToken;
+        // return response()->json([
+        //     'message' => 'Successfully registered',
+        //     'token' => $token
+        // ], 200);
     }
 }
